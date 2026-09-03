@@ -5,7 +5,7 @@ import { useApp } from './useApp';
 import { useState } from 'react';
 
 function App() {
-  const { filas, setFilas, editarUnaFila, idFilaEditada } = useApp();
+  const { filas, setFilas, editarUnaFila, idFilaEditada, setIdFilaEditada } = useApp();
   const [texto, setTexto] = useState('');
 
   return (
@@ -14,20 +14,21 @@ function App() {
         filas={filas}
         editar={editarUnaFila}
         guardar={(val) => {
-          console.log(filas);
           const otraFilas = filas.map((el) => {
             if (el.id === idFilaEditada) { el.texto = val; el.edit = 0; }
             return el;
           });
-          
+          setIdFilaEditada(undefined);
           setFilas(otraFilas)
         }}
       />
-      <InputFila
-        texto={texto}
-        clases="rounded-md ps-1 text-[#202020] bg-gray-500 w-[90%]"
-        ejecutar={(val) => { setFilas([...filas, { id: filas.length, texto: val, edit: 0 }]); }}
-      />
+      {idFilaEditada === undefined &&
+        <InputFila
+          texto={texto}
+          clases="rounded-md ps-1 text-[#202020] bg-gray-500 w-[90%]"
+          ejecutar={(val) => { setFilas([...filas, { id: filas.length, texto: val, edit: 0 }]); }}
+        />
+      }
     </div>
   )
 }
