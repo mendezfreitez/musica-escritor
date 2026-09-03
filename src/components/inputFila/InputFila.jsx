@@ -9,7 +9,7 @@ export const InputFila = ({ clases, ejecutar, texto }) => {
             value={text}
             placeholder="Ingrese texto"
             className={clases}
-            style={{ height: "30px", fontSize: "16px", borderWidth: 0 }}
+            style={{ height: "40px", fontSize: "20px", borderWidth: 0 }}
             onChange={(e) => { setText(e.target.value) }}
             onKeyUp={(e) => {
                 if (['Enter'].includes(e.key)) {

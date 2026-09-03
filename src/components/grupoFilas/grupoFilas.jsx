@@ -11,9 +11,9 @@ export const GrupoFilas = ({ filas, editar, guardar }) => {
                 return (
                     <>
                         {edit === 0
-                            ? <p onClick={() => { editar(el) }} key={id}>{texto}</p>
+                            ? <p className="text-[#464646]" style={{fontSize: "20px", lineHeight: "40px"}} onClick={() => { editar(el) }} key={id}>{texto}</p>
                             : <InputFila
-                                clases="rounded-md ps-1 text-[#202020] bg-gray-500 w-[90%]"
+                                clases="rounded-md ps-1 text-[#464646] bg-gray-200 border-0 focus-visible:outline-0 focus-visible:inset-shadow-sm"
                                 texto={texto}
                                 ejecutar={guardar}
                             />

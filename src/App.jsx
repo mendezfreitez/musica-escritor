@@ -25,7 +25,7 @@ function App() {
       {idFilaEditada === undefined &&
         <InputFila
           texto={texto}
-          clases="rounded-md ps-1 text-[#202020] bg-gray-500 w-[90%]"
+          clases="rounded-md ps-1 text-[#464646] bg-gray-200 w-[90%] border-0 focus-visible:outline-0 focus-visible:inset-shadow-sm"
           ejecutar={(val) => { setFilas([...filas, { id: filas.length, texto: val, edit: 0 }]); }}
         />
       }
