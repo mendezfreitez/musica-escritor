@@ -2,9 +2,11 @@ import { useState } from "react";
 
 export const useApp = () => {
 	const [filas, setFilas] = useState([]);
+	const [idFilaEditada, setIdFilaEditada] = useState();
 
 	const editarUnaFila = (obj) => {
-		console.log(obj.id);
+
+		setIdFilaEditada(obj.id);
 
 		filas[obj.id].edit = 1;
 		const nFilas = filas.map((el) => {
@@ -19,6 +21,7 @@ export const useApp = () => {
 	return {
 		filas,
 		setFilas,
-		editarUnaFila
+		editarUnaFila,
+		idFilaEditada,
 	}
 }
