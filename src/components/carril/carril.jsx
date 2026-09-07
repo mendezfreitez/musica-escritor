@@ -1,0 +1,60 @@
+import { useEffect, useRef, useState } from "react";
+
+export const Carril = ({ id }) => {
+    const [x, setX] = useState(0);
+    const [minX, setMinX] = useState(undefined);
+    const dragging = useRef(false);
+    const startX = useRef(0);
+    const startPosition = useRef(0);
+
+    const handlePointerDown = (e) => {
+        dragging.current = true;
+
+        startX.current = e.clientX;
+        startPosition.current = x;
+
+        e.currentTarget.setPointerCapture(e.pointerId);
+    };
+
+    const handlePointerMove = (e) => {
+        if (!dragging.current) return;
+        const deltaX = e.clientX - startX.current;
+
+        if ((minX - 100) < (startPosition.current + deltaX)) {
+            setX(startPosition.current + deltaX);
+        }
+        // console.log(x);
+        // console.log(minX);
+    };
+
+    const handlePointerUp = () => {
+        dragging.current = false;
+    };
+
+    useEffect(() => {
+        setMinX(document.getElementById("carril_0").getBoundingClientRect().x);
+    }, []);
+
+    return (
+        <div className="h-[80px] w-full bg-gray-100 rounded-lg flex inset-shadow-sm inset-shadow-gray-500" id={`carril_${id}`}>
+            <div
+                onPointerDown={handlePointerDown}
+                onPointerMove={handlePointerMove}
+                onPointerUp={handlePointerUp}
+                onPointerCancel={handlePointerUp}
+                className="h-full bg-gray-100 rounded-lg"
+                style={{
+                    width: "100px",
+                    cursor: "grab",
+                    transform: `translateX(${x}px)`,
+                    position: "relative",
+                    touchAction: "none",
+                    userSelect: "none",
+                    boxShadow: "rgb(0, 0, 0) 0px -1px 4px -1px inset",
+                }}
+            >
+                Arrástrame
+            </div>
+        </div>
+    );
+}

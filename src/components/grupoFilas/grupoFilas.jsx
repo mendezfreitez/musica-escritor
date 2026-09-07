@@ -1,4 +1,5 @@
 import { InputFila } from "../inputFila/InputFila"
+import { Carril } from "../carril/carril";
 
 export const GrupoFilas = ({ filas, editar, guardar }) => {
 
@@ -13,8 +14,9 @@ export const GrupoFilas = ({ filas, editar, guardar }) => {
                         {edit === 0
                             ?
                             <>
-                                <div className="h-[40px] w-full bg-cyan-600">
-                                </div>
+                                {/* <div className="h-[80px] w-full bg-cyan-600 rounded-lg"> */}
+                                    <Carril id={id} />
+                                {/* </div> */}
                                 <p className="text-[#464646]" style={{ fontSize: "20px", lineHeight: "40px" }} onClick={() => { editar(el) }} key={id}>
                                     {texto}
                                 </p>
