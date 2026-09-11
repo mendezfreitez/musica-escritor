@@ -90,7 +90,7 @@ export const Carril = ({ id }) => {
                             boxShadow: "rgb(0, 0, 0) 0px -1px 4px -1px inset",
                         }}
                     >
-                        <p className="text-center w-full text-2xl">
+                        <p className="text-center w-full text-xl">
                         {idx}
                         </p>
                     </div>
