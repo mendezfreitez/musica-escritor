@@ -2,10 +2,12 @@ import { useEffect, useRef, useState } from "react";
 
 export const Carril = ({ id }) => {
     const [x, setX] = useState(0);
-    const [minX, setMinX] = useState(undefined);
+    const [maxX, setMaxX] = useState(0);
     const dragging = useRef(false);
     const startX = useRef(0);
     const startPosition = useRef(0);
+    const containerRef = useRef(null);
+    const elementoRef = useRef(null);
 
     const handlePointerDown = (e) => {
         dragging.current = true;
@@ -20,11 +22,7 @@ export const Carril = ({ id }) => {
         if (!dragging.current) return;
         const deltaX = e.clientX - startX.current;
 
-        if ((minX - 100) < (startPosition.current + deltaX)) {
-            setX(startPosition.current + deltaX);
-        }
-        // console.log(x);
-        // console.log(minX);
+        setX(Math.max(0, Math.min(maxX, startPosition.current + deltaX)));
     };
 
     const handlePointerUp = () => {
@@ -32,12 +30,25 @@ export const Carril = ({ id }) => {
     };
 
     useEffect(() => {
-        setMinX(document.getElementById("carril_0").getBoundingClientRect().x);
+        const actualizarLimites = () => {
+            const contenedor = containerRef.current;
+            const elemento = elementoRef.current;
+            if (!contenedor || !elemento) return;
+
+            setMaxX(contenedor.clientWidth - elemento.getBoundingClientRect().width);
+        };
+
+        actualizarLimites();
+
+        const observer = new ResizeObserver(actualizarLimites);
+        observer.observe(containerRef.current);
+        return () => observer.disconnect();
     }, []);
 
     return (
-        <div className="h-[80px] w-full bg-gray-100 rounded-lg flex inset-shadow-sm inset-shadow-gray-500" id={`carril_${id}`}>
+        <div className="h-[80px] w-full bg-gray-100 rounded-lg flex inset-shadow-sm inset-shadow-gray-500" id={`carril_${id}`} ref={containerRef}>
             <div
+                ref={elementoRef}
                 onPointerDown={handlePointerDown}
                 onPointerMove={handlePointerMove}
                 onPointerUp={handlePointerUp}
