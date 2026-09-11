@@ -8,11 +8,16 @@ function App() {
   const { filas, setFilas, editarUnaFila, idFilaEditada, setIdFilaEditada } = useApp();
   const [texto, setTexto] = useState('');
 
+  const cambiarBloques = (id, bs) => {
+    setFilas(filas.map(el => el.id === id ? { ...el, bloques: bs } : el));
+  };
+
   return (
     <div className="flex flex-col items-center">
       <GrupoFilas
         filas={filas}
         editar={editarUnaFila}
+        cambiarBloques={cambiarBloques}
         guardar={(val) => {
           const otraFilas = filas.map((el) => {
             if (el.id === idFilaEditada) { el.texto = val; el.edit = 0; }

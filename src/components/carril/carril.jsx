@@ -1,26 +1,27 @@
 import { useEffect, useRef, useState } from "react";
 
 const ANCHO = 70;
+const POR_DEFECTO = [{ uid: 1, x: 0 }];
 
-export const Carril = ({ id }) => {
-    const [bloques, setBloques] = useState([{ uid: 1, x: 0 }]);
+export const Carril = ({ id, bloques, onCambioBloques }) => {
     const [maxX, setMaxX] = useState(0);
-    const uidRef = useRef(2);
     const containerRef = useRef(null);
     const arrastrado = useRef(null);
 
-    const mover = (bs, uid, deseado) => {
-        if (!bs.some((b) => b.uid === uid)) return bs;
+    const bs = bloques ?? POR_DEFECTO;
+
+    const mover = (lista, uid, deseado) => {
+        if (!lista.some((b) => b.uid === uid)) return lista;
 
         const x = Math.max(0, Math.min(maxX, deseado));
-        return bs.map((b) => (b.uid === uid ? { ...b, x } : b));
+        return lista.map((b) => (b.uid === uid ? { ...b, x } : b));
     };
 
     const handlePointerDown = (uid, e) => {
         arrastrado.current = {
             uid,
             startX: e.clientX,
-            startPos: bloques.find((b) => b.uid === uid)?.x ?? 0,
+            startPos: bs.find((b) => b.uid === uid)?.x ?? 0,
         };
 
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -31,7 +32,7 @@ export const Carril = ({ id }) => {
         if (!arr || arr.uid !== uid) return;
 
         const deseado = arr.startPos + (e.clientX - arr.startX);
-        setBloques((bs) => mover(bs, uid, deseado));
+        onCambioBloques(mover(bs, uid, deseado));
     };
 
     const handlePointerUp = () => {
@@ -39,10 +40,9 @@ export const Carril = ({ id }) => {
     };
 
     const agregar = () => {
-        setBloques((bs) => {
-            const ultimoX = bs.reduce((m, b) => Math.max(m, b.x + ANCHO), 0);
-            return [...bs, { uid: uidRef.current++, x: Math.min(ultimoX, maxX) }];
-        });
+        const nuevoUid = bs.reduce((m, b) => Math.max(m, b.uid), 0) + 1;
+        const ultimoX = bs.reduce((m, b) => Math.max(m, b.x + ANCHO), 0);
+        onCambioBloques([...bs, { uid: nuevoUid, x: Math.min(ultimoX, maxX) }]);
     };
 
     useEffect(() => {
@@ -61,9 +61,15 @@ export const Carril = ({ id }) => {
     }, []);
 
     useEffect(() => {
-        setBloques((bs) =>
-            bs.map((b) => ({ ...b, x: Math.max(0, Math.min(b.x, maxX)) }))
-        );
+        if (maxX <= 0) return;
+
+        const nuevos = bs.map((b) => ({
+            ...b,
+            x: Math.max(0, Math.min(b.x, maxX)),
+        }));
+        const cambio = nuevos.some((b, i) => b.x !== bs[i].x);
+        if (cambio) onCambioBloques(nuevos);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [maxX]);
 
     return (
@@ -73,7 +79,7 @@ export const Carril = ({ id }) => {
                 id={`carril_${id}`}
                 ref={containerRef}
             >
-                {bloques.map((b, idx) => (
+                {bs.map((b, idx) => (
                     <div
                         key={b.uid}
                         onPointerDown={(e) => handlePointerDown(b.uid, e)}
@@ -96,7 +102,7 @@ export const Carril = ({ id }) => {
                     </div>
                 ))}
             </div>
-            {bloques.length < 7 &&
+            {bs.length < 7 &&
             <button
             type="button"
             onClick={agregar}

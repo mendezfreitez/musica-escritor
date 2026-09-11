@@ -1,7 +1,7 @@
 import { InputFila } from "../inputFila/InputFila"
 import { Carril } from "../carril/carril";
 
-export const GrupoFilas = ({ filas, editar, guardar }) => {
+export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques }) => {
 
 
 
@@ -10,14 +10,16 @@ export const GrupoFilas = ({ filas, editar, guardar }) => {
             {filas.map(el => {
                 const { id, texto, edit } = el;
                 return (
-                    <>
+                    <div key={id}>
                         {edit === 0
                             ?
                             <>
-                                {/* <div className="h-[80px] w-full bg-cyan-600 rounded-lg"> */}
-                                    <Carril id={id} />
-                                {/* </div> */}
-                                <p className="text-[#464646]" style={{ fontSize: "20px", lineHeight: "40px" }} onClick={() => { editar(el) }} key={id}>
+                                <Carril
+                                    id={id}
+                                    bloques={el.bloques}
+                                    onCambioBloques={(bs) => cambiarBloques(id, bs)}
+                                />
+                                <p className="text-[#464646]" style={{ fontSize: "20px", lineHeight: "40px" }} onClick={() => { editar(el) }}>
                                     {texto}
                                 </p>
                             </>
@@ -27,7 +29,7 @@ export const GrupoFilas = ({ filas, editar, guardar }) => {
                                 ejecutar={guardar}
                             />
                         }
-                    </>
+                    </div>
                 )
             })}
         </div>
