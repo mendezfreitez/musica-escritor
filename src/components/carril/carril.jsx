@@ -3,7 +3,7 @@ import { Recuadro } from "../recuadro/recuadro";
 import { PlusIcon } from "lucide-react";
 import { ANCHO, POR_DEFECTO } from "../../const";
 
-export const Carril = ({ id, bloques, onCambioBloques, editando }) => {
+export const Carril = ({ id, bloques, onCambioBloques, editando, size = 60 }) => {
     const [maxX, setMaxX] = useState(0);
     const containerRef = useRef(null);
 
@@ -50,7 +50,7 @@ export const Carril = ({ id, bloques, onCambioBloques, editando }) => {
                 ref={containerRef}
             >
                 {bs.map((b, idx) => (
-                    <Recuadro key={idx} b={b} idx={idx} bloques={bloques} onCambioBloques={onCambioBloques} maxX={maxX} editando={editando} />
+                    <Recuadro key={idx} b={b} idx={idx} bloques={bloques} onCambioBloques={onCambioBloques} maxX={maxX} editando={editando} size={size} />
                 ))}
             </div>
             {bs.length < 7 &&

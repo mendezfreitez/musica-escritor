@@ -18,6 +18,7 @@ function App() {
         filas={filas}
         editar={editarUnaFila}
         cambiarBloques={cambiarBloques}
+        size={60}
         guardar={(val) => {
           const otraFilas = filas.map((el) => {
             if (el.id === idFilaEditada) { el.texto = val; el.edit = 0; }

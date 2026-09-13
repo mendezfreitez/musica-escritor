@@ -1,7 +1,7 @@
 import { InputFila } from "../inputFila/InputFila"
 import { Carril } from "../carril/carril";
 
-export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques }) => {
+export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques, size = 20 }) => {
 
     const editando = filas.some((el) => el.edit === 1);
 
@@ -17,11 +17,11 @@ export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques }) => {
                 return (
                     <div key={id} className={zIndex}>
                         <div className={destacada ? "rounded-lg bg-[#26A69A] shadow-lg p-2" : ""}>
-                            <Carril
+<Carril
                                 id={id}
                                 bloques={el.bloques}
                                 onCambioBloques={(bs) => cambiarBloques(id, bs)}
-                                editando={editando}
+                                size={size}
                             />
                             {destacada
                                 ? <InputFila

@@ -4,7 +4,7 @@ import { SlidersHorizontalIcon, Trash2 } from "lucide-react";
 import { ChordDiagram } from "@parent-tobias/chord-component";
 
 export const Recuadro = (prps) => {
-    const { b, idx, bloques, onCambioBloques, maxX, editando } = prps;
+    const { b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
     const [editable, setEditable] = useState(false);
     const arrastrado = useRef(null);
     const bs = bloques ?? POR_DEFECTO;
@@ -63,10 +63,14 @@ export const Recuadro = (prps) => {
             </div>
             <chord-diagram
                 instrument="guitar"
-                className="acorde mt-4"
+                className="acorde m-auto mt-5"
                 chord='C'
                 hideLabel={true}
                 style={{
+                    width: `${size}px`,
+                    height: `${size}px`,
+                    alignSelf: "center",
+                    // margin: "0 auto",
                     '--chord-bg-color': 'red',
                     '--chord-text-color': 'blue',
                     '--chord-border-color': 'green',
