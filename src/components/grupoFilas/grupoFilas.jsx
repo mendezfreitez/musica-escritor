@@ -8,7 +8,7 @@ export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques }) => {
     return (
         <div className="w-[90%] relative">
             {editando && (
-                <div className="fixed inset-0 bg-gray-400/20 z-0" />
+                <div className="fixed inset-0 bg-[#3a9a8f4d] z-0" />
             )}
             {filas.map(el => {
                 const { id, texto, edit } = el;
@@ -16,11 +16,12 @@ export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques }) => {
                 const zIndex = destacada ? "relative z-10" : (editando ? "relative z-[-1]" : "");
                 return (
                     <div key={id} className={zIndex}>
-                        <div className={destacada ? "rounded-lg bg-teal-500 shadow-lg p-2" : ""}>
+                        <div className={destacada ? "rounded-lg bg-[#26A69A] shadow-lg p-2" : ""}>
                             <Carril
                                 id={id}
                                 bloques={el.bloques}
                                 onCambioBloques={(bs) => cambiarBloques(id, bs)}
+                                editando={editando}
                             />
                             {destacada
                                 ? <InputFila
