@@ -4,17 +4,18 @@ import { Guitar, Trash2 } from "lucide-react";
 import { ChordDiagram } from "@parent-tobias/chord-component";
 import { useDropDown } from "../dropDownMenu/useDropDown";
 import { DropDown } from "../dropDownMenu/DropDown";
-import { Modal } from "../modal/Modal";
+import { ModalAcordes } from "../modal/modalAcordes/modalAcordes.jsx";
+import { useModalAcordes } from "../modal/modalAcordes/modalAcordes.js";
 
 const UMBRAL = 4;
 
 export const Recuadro = (prps) => {
     const {acorde = "C#", b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
     const [editable, setEditable] = useState(false);
-    const [modalAcorde, setModalAcorde] = useState(false);
     const arrastrado = useRef(null);
     const bs = bloques ?? POR_DEFECTO;
     const { abierto, posicion, abrir, cerrar } = useDropDown();
+    const modal = useModalAcordes();
 
     const eliminar = () => {
         onCambioBloques(bs.filter((bl) => bl.uid !== b.uid));
@@ -23,7 +24,7 @@ export const Recuadro = (prps) => {
 
     const cambiarAcorde = () => {
         cerrar();
-        setModalAcorde(true);
+        modal.abrir();
     };
 
     const handlePointerDown = (uid, e) => {
@@ -118,13 +119,7 @@ export const Recuadro = (prps) => {
                     { id: "acorde", label: "Cambiar acorde", icono: <div className="text-sm">{acorde}</div>, accion: cambiarAcorde },
                 ]}
             />
-            <Modal
-                abierto={modalAcorde}
-                onCerrar={() => setModalAcorde(false)}
-                titulo="Cambiar acorde"
-            >
-                <p className="text-sm text-gray-600">Seleccionar acorde — en desarrollo.</p>
-            </Modal>
+            <ModalAcordes abierto={modal.abierto} onCerrar={modal.cerrar} />
         </div>
     )
 }
