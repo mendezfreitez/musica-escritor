@@ -1,19 +1,40 @@
 import { useRef, useState } from "react";
 import { ANCHO, POR_DEFECTO } from "../../const";
-import { SlidersHorizontalIcon, Trash2 } from "lucide-react";
+import { Guitar, Trash2 } from "lucide-react";
 import { ChordDiagram } from "@parent-tobias/chord-component";
+import { useDropDown } from "../dropDownMenu/useDropDown";
+import { DropDown } from "../dropDownMenu/DropDown";
+import { Modal } from "../modal/Modal";
+
+const UMBRAL = 4;
 
 export const Recuadro = (prps) => {
-    const { b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
+    const {acorde = "C#", b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
     const [editable, setEditable] = useState(false);
+    const [modalAcorde, setModalAcorde] = useState(false);
     const arrastrado = useRef(null);
     const bs = bloques ?? POR_DEFECTO;
+    const { abierto, posicion, abrir, cerrar } = useDropDown();
+
+    const eliminar = () => {
+        onCambioBloques(bs.filter((bl) => bl.uid !== b.uid));
+        cerrar();
+    };
+
+    const cambiarAcorde = () => {
+        cerrar();
+        setModalAcorde(true);
+    };
 
     const handlePointerDown = (uid, e) => {
+        if (e.button !== 0) return;
+
         arrastrado.current = {
             uid,
             startX: e.clientX,
+            startY: e.clientY,
             startPos: bs.find((b) => b.uid === uid)?.x ?? 0,
+            arrastrando: false,
         };
 
         e.currentTarget.setPointerCapture(e.pointerId);
@@ -23,11 +44,22 @@ export const Recuadro = (prps) => {
         const arr = arrastrado.current;
         if (!arr || arr.uid !== uid) return;
 
+        const distancia = Math.hypot(e.clientX - arr.startX, e.clientY - arr.startY);
+        if (!arr.arrastrando) {
+            if (distancia <= UMBRAL) return;
+            arr.arrastrando = true;
+        }
+
         const deseado = arr.startPos + (e.clientX - arr.startX);
         onCambioBloques(mover(bs, uid, deseado));
     };
 
-    const handlePointerUp = () => {
+    const handlePointerUp = (uid, e) => {
+        const arr = arrastrado.current;
+        if (arr && arr.uid === uid && !arr.arrastrando) {
+            const rect = e.currentTarget.getBoundingClientRect();
+            abrir(rect.left, rect.top);
+        }
         arrastrado.current = null;
     };
 
@@ -43,8 +75,12 @@ export const Recuadro = (prps) => {
             key={b.uid}
             onPointerDown={(e) => handlePointerDown(b.uid, e)}
             onPointerMove={(e) => handlePointerMove(b.uid, e)}
-            onPointerUp={handlePointerUp}
-            onPointerCancel={handlePointerUp}
+            onPointerUp={(e) => handlePointerUp(b.uid, e)}
+            onPointerCancel={(e) => handlePointerUp(b.uid, e)}
+            onDoubleClick={() => { alert('Se va a editar'); }}
+            onContextMenu={(e) => {
+                e.preventDefault();
+            }}
             onMouseOver={() => { setEditable(true); }}
             onMouseLeave={() => { setEditable(false); }}
             className="h-full bg-gray-100 rounded-lg absolute left-0 top-0 flex items-center"
@@ -57,25 +93,38 @@ export const Recuadro = (prps) => {
                 boxShadow: "rgb(0, 0, 0) 0px -1px 4px -1px inset",
             }}
         >
-            <div className={`absolute flex flex-row justify-between p-0.5 h-[20px] w-full top-0 rounded-t-lg ${editando || editable ? "" : ""}`} onPointerDown={(e) => e.stopPropagation()}>
-                <SlidersHorizontalIcon color="#546E7A" className="cursor-pointer" size={17} onClick={() => { alert('holis XD'); }} />
-                <Trash2 color="#546E7A" className="cursor-pointer" size={17} onClick={() => { alert("eliminar"); }} />
+            <div className={`absolute flex flex-row justify-between ps-0.5 pt-0 h-[20px] w-full top-0 rounded-t-lg ${editando || editable ? "" : ""}`} onPointerDown={(e) => e.stopPropagation()}>
+                {/* <Menu color="#546E7A" className="cursor-pointer" size={16} onClick={() => { alert('holis XD'); }} /> */}
+                <p className="items-end text-sm flex">{acorde}</p>
             </div>
             <chord-diagram
                 instrument="guitar"
-                className="acorde m-auto mt-5"
-                chord='C'
+                className="acorde m-auto mt-3"
+                chord={acorde}
                 hideLabel={true}
                 style={{
                     width: `${size}px`,
                     height: `${size}px`,
                     alignSelf: "center",
-                    // margin: "0 auto",
-                    '--chord-bg-color': 'red',
-                    '--chord-text-color': 'blue',
-                    '--chord-border-color': 'green',
                 }}
             />
+            <DropDown
+                x={posicion.x}
+                y={posicion.y}
+                abierto={abierto}
+                onCerrar={cerrar}
+                opciones={[
+                    { id: "eliminar", label: "Eliminar", icono: <Trash2 size={16} />, accion: eliminar },
+                    { id: "acorde", label: "Cambiar acorde", icono: <Guitar size={16} />, accion: cambiarAcorde },
+                ]}
+            />
+            <Modal
+                abierto={modalAcorde}
+                onCerrar={() => setModalAcorde(false)}
+                titulo="Cambiar acorde"
+            >
+                <p className="text-sm text-gray-600">Seleccionar acorde — en desarrollo.</p>
+            </Modal>
         </div>
     )
 }

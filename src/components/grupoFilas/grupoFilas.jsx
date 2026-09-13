@@ -17,7 +17,7 @@ export const GrupoFilas = ({ filas, editar, guardar, cambiarBloques, size = 20 }
                 return (
                     <div key={id} className={zIndex}>
                         <div className={destacada ? "rounded-lg bg-[#26A69A] shadow-lg p-2" : ""}>
-<Carril
+                            <Carril
                                 id={id}
                                 bloques={el.bloques}
                                 onCambioBloques={(bs) => cambiarBloques(id, bs)}
