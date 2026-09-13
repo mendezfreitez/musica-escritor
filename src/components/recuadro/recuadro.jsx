@@ -115,7 +115,7 @@ export const Recuadro = (prps) => {
                 onCerrar={cerrar}
                 opciones={[
                     { id: "eliminar", label: "Eliminar", icono: <Trash2 size={16} />, accion: eliminar },
-                    { id: "acorde", label: "Cambiar acorde", icono: <Guitar size={16} />, accion: cambiarAcorde },
+                    { id: "acorde", label: "Cambiar acorde", icono: <div className="text-sm">{acorde}</div>, accion: cambiarAcorde },
                 ]}
             />
             <Modal

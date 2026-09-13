@@ -27,7 +27,7 @@ export const DropDown = ({ x, y, abierto, onCerrar, opciones }) => {
 	return createPortal(
 		<div
 			ref={ref}
-			className="fixed z-[999] flex flex-row items-center gap-1 rounded-md border border-gray-300 bg-white p-0.5 shadow-lg"
+			className="fixed z-[999] flex flex-row items-center gap-0.5 rounded-md border border-gray-300 bg-white p-0.5 shadow-lg"
 			style={{ left: x, top: y }}
 			onPointerDown={(e) => e.stopPropagation()}
 			onPointerUp={(e) => e.stopPropagation()}
@@ -38,7 +38,7 @@ export const DropDown = ({ x, y, abierto, onCerrar, opciones }) => {
 					type="button"
 					title={op.label}
 					aria-label={op.label}
-					className="cursor-pointer rounded p-1.5 text-gray-700 hover:bg-gray-600 hover:text-gray-100"
+					className="cursor-pointer rounded p-1.5 text-gray-800 hover:bg-gray-600 hover:text-gray-100"
 					onClick={op.accion}
 				>
 					{op.icono}
