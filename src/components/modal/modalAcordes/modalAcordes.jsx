@@ -1,7 +1,7 @@
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import { Modal } from "../Modal";
 import { useModalAcordes } from "./modalAcordes";
-import { acordeClasico } from "../../../acordesGuitarra";
+import { acordeClasico, convertirRelativos } from "../../../acordesGuitarra";
 
 export const ModalAcordes = ({ abierto, onCerrar, onAplicar, instrument = "guitar", size = 60 }) => {
 	const {
@@ -14,6 +14,7 @@ export const ModalAcordes = ({ abierto, onCerrar, onAplicar, instrument = "guita
 		seleccionarVariante,
 	} = useModalAcordes();
 	const previewRef = useRef(null);
+	const [posicionFret, setPosicionFret] = useState(1);
 
 	useEffect(() => {
 		if (abierto) limpiar();
@@ -24,8 +25,17 @@ export const ModalAcordes = ({ abierto, onCerrar, onAplicar, instrument = "guita
 		if (!el) return;
 
 		const dato = acordeClasico(variante);
-		el.chordFingers = dato?.fingers;
-		el.chordBarres = dato?.barres ?? [];
+		if (!dato) {
+			el.chordFingers = undefined;
+			el.chordBarres = [];
+			setPosicionFret(1);
+			return;
+		}
+
+		const { fingers, barres, position } = convertirRelativos(dato.fingers, dato.barres ?? []);
+		el.chordFingers = fingers;
+		el.chordBarres = barres;
+		setPosicionFret(position);
 	}, [variante]);
 
 	const aplicar = () => {
@@ -72,7 +82,7 @@ export const ModalAcordes = ({ abierto, onCerrar, onAplicar, instrument = "guita
 						</button>
 					))}
 				</div>
-				<div className="flex w-[200px] flex-col items-center justify-center rounded-md border border-gray-200 bg-gray-50 p-2">
+				<div className="relative flex w-[200px] flex-col items-center justify-center rounded-md border border-gray-200 bg-gray-50 p-2">
 					{variante ? (
 						<>
 							<chord-diagram
@@ -82,6 +92,11 @@ export const ModalAcordes = ({ abierto, onCerrar, onAplicar, instrument = "guita
 								hideLabel={true}
 								style={{ width: `${size + 40}px`, height: `${size + 40}px` }}
 							/>
+							{posicionFret > 1 && (
+								<span className="absolute left-1 top-1 text-[10px] font-bold text-gray-400">
+									{posicionFret}fr
+								</span>
+							)}
 							<span className="mt-1 text-sm font-semibold text-gray-700">{variante}</span>
 						</>
 					) : (

@@ -84,3 +84,23 @@ export const acordesGuitarra = {
 };
 
 export const acordeClasico = (nombre) => acordesGuitarra[nombre] ?? null;
+
+export const convertirRelativos = (fingers = [], barres = []) => {
+	const allFrets = [
+		...fingers.map(([, f]) => f),
+		...barres.map((b) => b.fret),
+	].filter((f) => f > 0);
+
+	if (allFrets.length === 0) return { fingers, barres, position: 1 };
+
+	const minFret = Math.min(...allFrets);
+	const maxFret = Math.max(...allFrets);
+
+	if (maxFret <= 4 || minFret <= 1) return { fingers, barres, position: 1 };
+
+	return {
+		fingers: fingers.map(([s, f]) => [s, f - minFret + 1]),
+		barres: barres.map((b) => ({ ...b, fret: b.fret - minFret + 1 })),
+		position: minFret,
+	};
+};

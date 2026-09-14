@@ -6,7 +6,7 @@ import { useDropDown } from "../dropDownMenu/useDropDown";
 import { DropDown } from "../dropDownMenu/DropDown";
 import { ModalAcordes } from "../modal/modalAcordes/modalAcordes.jsx";
 import { useModalAcordes } from "../modal/modalAcordes/modalAcordes.js";
-import { acordeClasico } from "../../acordesGuitarra";
+import { acordeClasico, convertirRelativos } from "../../acordesGuitarra";
 
 const UMBRAL = 4;
 
@@ -14,6 +14,7 @@ export const Recuadro = (prps) => {
     const {b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
     const acorde = b.acorde ?? "C#";
     const [editable, setEditable] = useState(false);
+    const [posicionFret, setPosicionFret] = useState(1);
     const arrastrado = useRef(null);
     const diagramaRef = useRef(null);
     const bs = bloques ?? POR_DEFECTO;
@@ -25,8 +26,17 @@ export const Recuadro = (prps) => {
         if (!el) return;
 
         const dato = acordeClasico(acorde);
-        el.chordFingers = dato?.fingers;
-        el.chordBarres = dato?.barres ?? [];
+        if (!dato) {
+            el.chordFingers = undefined;
+            el.chordBarres = [];
+            setPosicionFret(1);
+            return;
+        }
+
+        const { fingers, barres, position } = convertirRelativos(dato.fingers, dato.barres ?? []);
+        el.chordFingers = fingers;
+        el.chordBarres = barres;
+        setPosicionFret(position);
     }, [acorde]);
 
     const eliminar = () => {
@@ -115,18 +125,25 @@ export const Recuadro = (prps) => {
                 {/* <Menu color="#546E7A" className="cursor-pointer" size={16} onClick={() => { alert('holis XD'); }} /> */}
                 <p className="items-end text-sm flex">{acorde}</p>
             </div>
-            <chord-diagram
-                ref={diagramaRef}
-                instrument="guitar"
-                className="acorde m-auto mt-3"
-                chord={acorde}
-                hideLabel={true}
-                style={{
-                    width: `${size}px`,
-                    height: `${size}px`,
-                    alignSelf: "center",
-                }}
-            />
+            <div className="relative m-auto mt-3">
+                <chord-diagram
+                    ref={diagramaRef}
+                    instrument="guitar"
+                    className="acorde"
+                    chord={acorde}
+                    hideLabel={true}
+                    style={{
+                        width: `${size}px`,
+                        height: `${size}px`,
+                        alignSelf: "center",
+                    }}
+                />
+                {posicionFret > 1 && (
+                    <span className="absolute left-0 top-0 text-[10px] text-gray-500">
+                        {posicionFret}fr
+                    </span>
+                )}
+            </div>
             <DropDown
                 x={posicion.x}
                 y={posicion.y}
