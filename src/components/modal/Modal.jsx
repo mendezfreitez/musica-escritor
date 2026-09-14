@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { createPortal } from "react-dom";
 
-export const Modal = ({ abierto, onCerrar, titulo, children }) => {
+export const Modal = ({ abierto, onCerrar, titulo, children, ancho = "w-[320px]" }) => {
 	useEffect(() => {
 		if (!abierto) return;
 
@@ -19,9 +19,13 @@ export const Modal = ({ abierto, onCerrar, titulo, children }) => {
 		<div
 			className="fixed inset-0 z-[1000] flex items-center justify-center bg-black/50"
 			onMouseDown={onCerrar}
+			onPointerDown={(e) => e.stopPropagation()}
+			onPointerMove={(e) => e.stopPropagation()}
+			onPointerUp={(e) => e.stopPropagation()}
+			onPointerCancel={(e) => e.stopPropagation()}
 		>
 			<div
-				className="w-[320px] rounded-lg bg-white p-4 shadow-xl"
+				className={`${ancho} rounded-lg bg-white p-4 shadow-xl`}
 				onMouseDown={(e) => e.stopPropagation()}
 			>
 				<div className="mb-3 flex items-center justify-between">

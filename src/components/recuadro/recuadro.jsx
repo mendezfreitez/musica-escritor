@@ -1,4 +1,4 @@
-import { useRef, useState } from "react";
+import { useRef, useState, useEffect } from "react";
 import { ANCHO, POR_DEFECTO } from "../../const";
 import { Guitar, Trash2 } from "lucide-react";
 import { ChordDiagram } from "@parent-tobias/chord-component";
@@ -6,20 +6,37 @@ import { useDropDown } from "../dropDownMenu/useDropDown";
 import { DropDown } from "../dropDownMenu/DropDown";
 import { ModalAcordes } from "../modal/modalAcordes/modalAcordes.jsx";
 import { useModalAcordes } from "../modal/modalAcordes/modalAcordes.js";
+import { acordeClasico } from "../../acordesGuitarra";
 
 const UMBRAL = 4;
 
 export const Recuadro = (prps) => {
-    const {acorde = "C#", b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
+    const {b, idx, bloques, onCambioBloques, maxX, editando, size = 60 } = prps;
+    const acorde = b.acorde ?? "C#";
     const [editable, setEditable] = useState(false);
     const arrastrado = useRef(null);
+    const diagramaRef = useRef(null);
     const bs = bloques ?? POR_DEFECTO;
     const { abierto, posicion, abrir, cerrar } = useDropDown();
     const modal = useModalAcordes();
 
+    useEffect(() => {
+        const el = diagramaRef.current;
+        if (!el) return;
+
+        const dato = acordeClasico(acorde);
+        el.chordFingers = dato?.fingers;
+        el.chordBarres = dato?.barres ?? [];
+    }, [acorde]);
+
     const eliminar = () => {
         onCambioBloques(bs.filter((bl) => bl.uid !== b.uid));
         cerrar();
+    };
+
+    const aplicarAcorde = (nuevo) => {
+        onCambioBloques(bs.map((bl) => (bl.uid === b.uid ? { ...bl, acorde: nuevo } : bl)));
+        modal.cerrar();
     };
 
     const cambiarAcorde = () => {
@@ -78,7 +95,7 @@ export const Recuadro = (prps) => {
             onPointerMove={(e) => handlePointerMove(b.uid, e)}
             onPointerUp={(e) => handlePointerUp(b.uid, e)}
             onPointerCancel={(e) => handlePointerUp(b.uid, e)}
-            onDoubleClick={() => { alert('Se va a editar'); }}
+            // onDoubleClick={() => { alert('Se va a editar'); }}
             onContextMenu={(e) => {
                 e.preventDefault();
             }}
@@ -99,6 +116,7 @@ export const Recuadro = (prps) => {
                 <p className="items-end text-sm flex">{acorde}</p>
             </div>
             <chord-diagram
+                ref={diagramaRef}
                 instrument="guitar"
                 className="acorde m-auto mt-3"
                 chord={acorde}
@@ -119,7 +137,7 @@ export const Recuadro = (prps) => {
                     { id: "acorde", label: "Cambiar acorde", icono: <div className="text-sm">{acorde}</div>, accion: cambiarAcorde },
                 ]}
             />
-            <ModalAcordes abierto={modal.abierto} onCerrar={modal.cerrar} />
+            <ModalAcordes abierto={modal.abierto} onCerrar={modal.cerrar} instrument="guitar" size={size} onAplicar={aplicarAcorde} />
         </div>
     )
 }
